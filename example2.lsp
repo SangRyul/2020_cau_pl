@@ -1,1 +1,1 @@
-(reverse (quote 1 2 3 4))
+(ZEROP 0)

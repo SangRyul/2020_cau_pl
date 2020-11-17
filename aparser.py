@@ -27,7 +27,7 @@ def identifier_parser(data):
         return[data[:identifier_match.end()], data[identifier_match.end():]]
 
 keywords_li = ['reverse','car','define','lambda', '*', '+', '-', '/', '<', '>', '<=', '>=', '%', 'if',
-               'length', 'abs', 'append', 'pow', 'min', 'max', 'round', 'not', 'quote']
+               'length', 'abs', 'append', 'pow', 'min', 'max', 'round', 'not', '\'', 'atom','null','NUMBERP','ZEROP']
 
 def keyword_parser(data):
     for item in keywords_li:
@@ -60,7 +60,7 @@ def binary_parser(data):
         if data.startswith(item):
             return [data[:len(item)], data[len(item):]]
 
-unary_operations = ['length', 'abs', 'round', 'not']
+unary_operations = ['length', 'abs', 'round', 'not','\'']
 
 def unary_parser(data):
     for item in unary_operations:

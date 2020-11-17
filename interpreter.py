@@ -57,7 +57,7 @@ def eval(x, dic):
         return x
     elif not isinstance(x, list):
         return x
-    elif x[0] == 'quote':
+    elif x[0] == '\'':
         (_, exp) = x
         return exp
     elif x[0] == 'if':
@@ -71,6 +71,7 @@ def eval(x, dic):
     elif x[0] == 'setq':
         (_, var, exp) = x
         dic[var] = eval(exp, dic)
+
     elif x[0] == 'set':
         (_, var, exp) = x
         # print(var, exp)
@@ -84,7 +85,30 @@ def eval(x, dic):
     elif x[0] == 'car':
         (_, var, exp) = x
         dic[var] = eval(exp, dic)
-
+    elif x[0] == 'atom':
+        (_, var) = x
+        if str(type(var)) == "<class 'str'>":
+            return "True"
+        else:
+            return "False"
+    elif x[0] == 'null':
+        (_, var) = x
+        if str(type(var)) == "<class 'NoneType'>":
+            return "T"
+        else:
+            return "F"
+    elif x[0] == 'NUMBERP':
+        (_, var) = x
+        if str(type(var)) == "<class 'int'>":
+            return "T"
+        else:
+            return "F"
+    elif x[0] == 'ZEROP':
+        (_, var) = x
+        if var == 0 :
+            return "T"
+        else:
+            return "ERROR"
     else:
         proc = eval(x[0], dic)
         args = [eval(exp, dic) for exp in x[1:]]

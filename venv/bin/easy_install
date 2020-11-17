@@ -1,0 +1,8 @@
+#!/Users/seonminseung/Documents/CS수업/3-2/프로그래밍언어론/2020_cau_pl/venv/bin/python
+# -*- coding: utf-8 -*-
+import re
+import sys
+from setuptools.command.easy_install import main
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.exit(main())
