@@ -84,6 +84,52 @@ def eval(x, dic):
     elif x[0] == 'car':
         (_, var, exp) = x
         dic[var] = eval(exp, dic)
+    elif x[0] == 'atom':
+        (_, var) = x
+        if str(type(var)) == "<class 'str'>":
+            return "True"
+        else:
+            return "False"
+    elif x[0] == 'null':
+        (_, var) = x
+        if str(type(var)) == "<class 'NoneType'>":
+            return "T"
+        else:
+            return "F"
+    elif x[0] == 'NUMBERP':
+        (_, var) = x
+        if str(type(var)) == "<class 'int'>":
+            return "T"
+        else:
+            return "F"
+    elif x[0] == 'ZEROP':
+        (_, var) = x
+        if var == 0 :
+            return "T"
+        else:
+            return "ERROR"
+
+    elif x[0] == 'minusp':
+        try:
+            (_, var, exp) = x
+            if(var=='-'):
+                if(isinstance(exp,int)):
+                    return 'T'
+        except:
+                return 'Error'
+    elif x[0] == 'equal':
+        (_, var, exp) = x
+        if(var==exp):
+            return 'T'
+        else:
+            return 'NIL'
+    elif x[0] == 'stringp':
+        try:
+            (_,dq1,*_,dq2)=x
+            if(dq1=='"' and dq2=='"' ):
+                return 'T'
+        except:
+            return 'NIL'
 
     else:
         proc = eval(x[0], dic)
