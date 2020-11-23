@@ -27,7 +27,7 @@ def identifier_parser(data):
         return[data[:identifier_match.end()], data[identifier_match.end():]]
 
 keywords_li = ['reverse','car','define','lambda', '*', '+', '-', '/', '<', '>', '<=', '>=', '%', 'if',
-               'length', 'abs', 'append', 'pow', 'min', 'max', 'round', 'not', 'quote', '\'']
+               'length', 'abs', 'append', 'pow', 'min', 'max', 'round', 'not', 'quote', '\'', 'atom','null','NUMBERP','ZEROP','minusp','equal','stringp','"']
 
 def keyword_parser(data):
     for item in keywords_li:
@@ -46,7 +46,7 @@ def lambda_parser(data):
 #     if data[:3] == 'car':
 #         return ['car', data[3:]]
 
-arithmetic_operators = ['*', '+', '-', '/', '%']
+arithmetic_operators = ['*', '+', '-', '/', '%','"']
 
 def arithemetic_parser(data):
     for item in arithmetic_operators:
