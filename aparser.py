@@ -27,7 +27,7 @@ def identifier_parser(data):
         return[data[:identifier_match.end()], data[identifier_match.end():]]
 
 keywords_li = ['reverse','car','define','lambda', '*', '+', '-', '/', '<', '>', '<=', '>=', '%', 'if',
-               'length', 'abs', 'append', 'pow', 'min', 'max', 'round', 'not', 'quote']
+               'length', 'abs', 'append', 'pow', 'min', 'max', 'round', 'not', 'quote', '\'']
 
 def keyword_parser(data):
     for item in keywords_li:
@@ -60,7 +60,7 @@ def binary_parser(data):
         if data.startswith(item):
             return [data[:len(item)], data[len(item):]]
 
-unary_operations = ['length', 'abs', 'round', 'not']
+unary_operations = ['length', 'abs', 'round', 'not', '\'']
 
 def unary_parser(data):
     for item in unary_operations:
@@ -90,11 +90,54 @@ def expression_parser(data):
             nex = expression_parser(rest)
             rest = nex.pop(1)
             token = nex.pop(0)
+
             if token[0] == ' ' or token == '\n':
                 continue
-            L.append(atom(token))
+            elif (token == '\''):
+
+                # print(expression_parser(rest))
+                tmp_quote = expression_parser(rest)[0]
+                rest = list(rest)
+                tmp_arr = []
+                a = 0
+                for x in rest:
+                    if(x =='('):
+                        a = 1
+                        tmp_arr.append(x)
+                    elif(x == ')'):
+                        tmp_arr.append(x)
+                        break;
+                    elif(a == 1):
+                        tmp_arr.append(x)
+                rest = ''.join(rest[len(tmp_arr):])
+
+                L.append(['quote', tmp_quote])
+            else:
+
+                L.append(atom(token))
+
         rest = rest[1:]
+
+        # print(rest)
+
         return [L, rest]
+    # elif token == '\'':
+    #
+    #     tmp = ['quote']
+    #     nex = expression_parser(rest)
+    #
+    #     token = nex.pop(0)
+    #     print(token)
+    #     print(nex)
+    #     tmp.append(atom(token))
+    #
+    #     rest = rest[1:]
+    #
+    #
+    #     return [tmp, rest]
+
+        # return ['quote', rest]
+
     else:
         return [token, rest]
 
