@@ -1,1 +1,4 @@
-(atom dfg)
+(
+(setq x '(wed))
+(numberp x)
+)
