@@ -39,7 +39,9 @@ lisp_to_python_dic = {
     'numberp': lambda x: number_procedure(x),
     'zerop': lambda x: print("T") if str(x) == "[0]" else print("F" + str(x)),
     'stringp' : lambda x : print("T") if(str(x[0]).startswith("\"")) else print("F"),
-    'member' : lambda x : x[1][x[1].index(x[0]):] if x[0] in x[1] else print("NIL")
+    'minusp': lambda x: minusp_procedure(x),
+    'equal': lambda x: print("T") if x[0] == x[1] else print("F"),
+    'member' : lambda x : x[1][x[1].index(x[0]):] if x[0] in x[1] else print("NIL"),
 
 }
 
@@ -59,6 +61,23 @@ def number_procedure(x):
         except ValueError:
             return print("F")
 
+
+def minusp_procedure(x):
+    try:
+        if str(type(int(str(x)[str(x).find("[") + 1: str(x).find("]")]))) == "<class 'int'>":
+            if (int(str(x)[str(x).find("[") + 1: str(x).find("]")]) < 0):
+                print("T")
+            else:
+                print("F")
+    except ValueError:
+        try:
+            if str(type(float(str(x)[str(x).find("[") + 1: str(x).find("]")]))) == "<class 'float'>":
+                if (float(str(x)[str(x).find("[") + 1: str(x).find("]")]) < 0):
+                    print("T")
+                else:
+                    print("F")
+        except ValueError:
+            return print("Error")
 
 
 def lambda_procedure(parms, body, *args):
@@ -157,20 +176,20 @@ def eval(x, dic):
     #     else:
     #         return "ERROR"
 
-    elif x[0] == 'minusp':
-        try:
-            (_, var, exp) = x
-            if (var == '-'):
-                if (isinstance(exp, int)):
-                    return 'T'
-        except:
-            return 'Error'
-    elif x[0] == 'equal':
-        (_, var, exp) = x
-        if (var == exp):
-            return 'T'
-        else:
-            return 'NIL'
+    # elif x[0] == 'minusp':
+    #     try:
+    #         (_, var, exp) = x
+    #         if (var == '-'):
+    #             if (isinstance(exp, int)):
+    #                 return 'T'
+    #     except:
+    #         return 'Error'
+    # elif x[0] == 'equal':
+    #     (_, var, exp) = x
+    #     if (var == exp):
+    #         return 'T'
+    #     else:
+    #         return 'NIL'
     # elif x[0] == 'stringp':
     #
     #     try:
