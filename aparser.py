@@ -159,9 +159,6 @@ def expression_parser(data):
                     L.append(atom(token))
 
             rest = rest[1:]
-
-            # print(rest)
-
             return [L, rest]
 
         else:
