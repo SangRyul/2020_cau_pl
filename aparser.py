@@ -15,7 +15,7 @@ def space_parser(data):
         return [data[:space_match.end()], data[space_match.end():]]
 
 def number_parser(data):
-    number_reg_ex = re.compile('\d+')
+    number_reg_ex = re.compile('[+-]?([0-9]*[.])?[0-9]+')
     number_match = number_reg_ex.match(data)
     if number_match:
         return[data[:number_match.end()], data[number_match.end():]]
@@ -76,8 +76,7 @@ def minus_parser(data):
             return [data[:1], data[1:]]
         else:
             #부호가 음수일경우
-            point = data.index("-")
-            return [data[:data.index(" ", point+1)+1], data[data.index(" ", point+1)+1:]]
+            number_parser(data)
 
 binary_operations = ['<=', '>=', '<', '>', 'pow', 'append']
 
