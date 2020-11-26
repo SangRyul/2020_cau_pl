@@ -27,12 +27,19 @@ def identifier_parser(data):
         return[data[:identifier_match.end()], data[identifier_match.end():]]
 
 keywords_li = ['reverse','car','define','lambda', '*', '+', '-', '/', '<', '>', '<=', '>=', '%', 'if',
-               'length', 'abs', 'append', 'pow', 'min', 'max', 'round', 'not', 'quote', '\'', 'atom','null','NUMBERP','ZEROP','minusp','equal','stringp',]
+               'length', 'abs', 'append', 'pow', 'min', 'max', 'round', 'not', 'quote',
+               'atom','null','NUMBERP','ZEROP','minusp','equal','stringp', 'member', '\'']
 
 def keyword_parser(data):
     for item in keywords_li:
         if data.startswith(item):
             return key_parser(data)
+def single_quote_parser(data):
+    #현재는 안쓰는 함수임
+    if data[:1] == "\'":
+        point = data.index("\'")
+        print(data[:data.index(')', point+1)])
+        return[data[:data.index(')', point+1)], data[data.index(")", point+1):]]
 def double_quote_parser(data):
     if data[:1] == "\"":
         point = data.index("\"")
@@ -79,7 +86,7 @@ def binary_parser(data):
         if data.startswith(item):
             return [data[:len(item)], data[len(item):]]
 
-unary_operations = ['length', 'abs', 'round', 'not', '\'']
+unary_operations = ['length', 'abs', 'round', 'not','\'']
 
 def unary_parser(data):
     for item in unary_operations:
@@ -100,56 +107,68 @@ def atom(s):
             return str(s)
 
 def expression_parser(data):
-    res = value_parser(data)
-    rest = res.pop(1)
-    # print(rest)
-    token = res.pop(0)
 
-    if token == '(':
-        L = []
+    try:
+        res = value_parser(data)
+        rest = res.pop(1)
+        token = res.pop(0)
 
-        while rest[0] != ')':
-            nex = expression_parser(rest)
-            rest = nex.pop(1)
-            token = nex.pop(0)
-            
+        if token == '(':
+            L = []
 
-            if token[0] == ' ' or token == '\n':
-                continue
-            # elif (token == '\"'):
-            #     pass
-                
-            elif (token == '\''):
+            while rest[0] != ')':
+                nex = expression_parser(rest)
+                rest = nex.pop(1)
+                token = nex.pop(0)
 
-                # print(expression_parser(rest))
-                tmp_quote = expression_parser(rest)[0]
-                rest = list(rest)
-                tmp_arr = []
-                a = 0
-                for x in rest:
-                    if(x =='('):
-                        a = 1
-                        tmp_arr.append(x)
-                    elif(x == ')'):
-                        tmp_arr.append(x)
-                        break;
-                    elif(a == 1):
-                        tmp_arr.append(x)
-                rest = ''.join(rest[len(tmp_arr):])
 
-                L.append(['quote', tmp_quote])
-            else:
+                if token[0] == ' ' or token == '\n':
+                    continue
+                # elif (token == '\"'):
+                #     pass
 
-                L.append(atom(token))
+                elif (token == '\''):
 
-        rest = rest[1:]
+                    # print(expression_parser(rest))
+                    tmp_quote = expression_parser(rest)[0]
+                    rest = list(rest)
+                    tmp_arr = []
+                    mode = 0
+                    if (rest[0] == '('):
+                        # 리스트 들어오는 경우
+                        mode = 1
+                        tmp_arr.append(rest[0])
+                    else:
+                        # 일반 변수 들어오는 경우
+                        tmp_arr.append(rest[0])
+                        mode = 2
 
-        # print(rest)
+                    for x in range(1, len(rest)-1):
+                        if(rest[x] == ")" and mode == 1):
+                            tmp_arr.append(rest[x])
+                            break
+                        elif(rest[x] == " " and mode == 2):
+                            break
+                        elif(mode == 1 or mode == 2):
+                            tmp_arr.append(rest[x])
 
-        return [L, rest]
+                    rest = ''.join(rest[len(tmp_arr):])
 
-    else:
-        return [token, rest]
+                    L.append(['quote', tmp_quote])
+                else:
+
+                    L.append(atom(token))
+
+            rest = rest[1:]
+
+            # print(rest)
+
+            return [L, rest]
+
+        else:
+            return [token, rest]
+    except:
+        pass
 
 def any_one_parser_factory(*args):
     return lambda data: (reduce(lambda f, g: f if f(data)  else g, args)(data))

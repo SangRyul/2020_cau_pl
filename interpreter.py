@@ -38,7 +38,8 @@ lisp_to_python_dic = {
     'null': lambda x: print("T") if x == "NIL" else print("F" + str(x)),
     'numberp': lambda x: number_procedure(x),
     'zerop': lambda x: print("T") if str(x) == "[0]" else print("F" + str(x)),
-    'stringp' : lambda x : print("T") if(str(x[0]).startswith("\"")) else print("F")
+    'stringp' : lambda x : print("T") if(str(x[0]).startswith("\"")) else print("F"),
+    'member' : lambda x : x[1][x[1].index(x[0]):] if x[0] in x[1] else print("NIL")
 
 }
 
@@ -80,7 +81,6 @@ def eval(x, dic):
     elif not isinstance(x, list):
         return x
     elif x[0] == 'quote':
-
         flaga = 1
         # quote 다음에 하나라면 변수로 취급해야한다.
         # quote 다음에 문자열 변수가 오면 문자열 취급
@@ -180,11 +180,11 @@ def eval(x, dic):
     #         return 'NIL'
 
     else:
+
         proc = eval(x[0], dic)
 
         args = [eval(exp, dic) for exp in x[1:]]
-        # print(proc)
-        # print(args)
+
 
         # print(proc(args))
         # return proc(args)
@@ -234,8 +234,11 @@ def main():
         data = f.read().strip()
 
     tmp = expression_parser(data)
+    if(tmp == None):
+        print("NIL")
+        return
     input_data = list(itertools.chain(*tmp))
-    # print(input_data)
+    print(input_data)
     output = eval(input_data, lisp_to_python_dic)
 
     # useless part
