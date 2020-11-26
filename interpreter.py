@@ -50,11 +50,14 @@ dic_new2 = {}
 
 def number_procedure(x):
     try:
-        print(str(type(int(str(x)[str(x).find("[") + 1: str(x).find("]")]))))
         if str(type(int(str(x)[str(x).find("[") + 1: str(x).find("]")]))) == "<class 'int'>":
             return print("T")
     except ValueError:
-        return print("F")
+        try:
+            if str(type(float(str(x)[str(x).find("[") + 1: str(x).find("]")]))) == "<class 'float'>":
+                return print("T")
+        except ValueError:
+            return print("F")
 
 
 
