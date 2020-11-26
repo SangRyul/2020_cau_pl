@@ -1,4 +1,1 @@
-(
-(setq x '(wed))
-(numberp x)
-)
+(+ -2 3)

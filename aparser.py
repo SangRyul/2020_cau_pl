@@ -27,12 +27,16 @@ def identifier_parser(data):
         return[data[:identifier_match.end()], data[identifier_match.end():]]
 
 keywords_li = ['reverse','car','define','lambda', '*', '+', '-', '/', '<', '>', '<=', '>=', '%', 'if',
-               'length', 'abs', 'append', 'pow', 'min', 'max', 'round', 'not', 'quote', '\'', 'atom','null','NUMBERP','ZEROP','minusp','equal','stringp','"']
+               'length', 'abs', 'append', 'pow', 'min', 'max', 'round', 'not', 'quote', '\'', 'atom','null','NUMBERP','ZEROP','minusp','equal','stringp',]
 
 def keyword_parser(data):
     for item in keywords_li:
         if data.startswith(item):
             return key_parser(data)
+def double_quote_parser(data):
+    if data[:1] == "\"":
+        point = data.index("\"")
+        return[data[:data.index('\"', point+1)+1], data[data.index("\"", point+1)+1:]]
 
 def declarator_parser(data):
     if data[:6] == 'define':
@@ -46,12 +50,27 @@ def lambda_parser(data):
 #     if data[:3] == 'car':
 #         return ['car', data[3:]]
 
-arithmetic_operators = ['*', '+', '-', '/', '%','"']
+arithmetic_operators = ['*', '+', '/', '%']
 
 def arithemetic_parser(data):
     for item in arithmetic_operators:
         if data.startswith(item):
             return [data[:len(item)], data[len(item):]]
+
+
+    if data[:1] == "\"":
+        point = data.index("\"")
+        return[data[:data.index('\"', point+1)+1], data[data.index("\"", point+1)+1:]]
+
+def minus_parser(data):
+    if data[:1] == "-":
+        if(data[1:2] == ' '):
+            #-연산을 위한 경우
+            return [data[:1], data[1:]]
+        else:
+            #부호가 음수일경우
+            point = data.index("-")
+            return [data[:data.index(" ", point+1)+1], data[data.index(" ", point+1)+1:]]
 
 binary_operations = ['<=', '>=', '<', '>', 'pow', 'append']
 
@@ -83,16 +102,23 @@ def atom(s):
 def expression_parser(data):
     res = value_parser(data)
     rest = res.pop(1)
+    # print(rest)
     token = res.pop(0)
+
     if token == '(':
         L = []
+
         while rest[0] != ')':
             nex = expression_parser(rest)
             rest = nex.pop(1)
             token = nex.pop(0)
+            
 
             if token[0] == ' ' or token == '\n':
                 continue
+            # elif (token == '\"'):
+            #     pass
+                
             elif (token == '\''):
 
                 # print(expression_parser(rest))
@@ -121,22 +147,6 @@ def expression_parser(data):
         # print(rest)
 
         return [L, rest]
-    # elif token == '\'':
-    #
-    #     tmp = ['quote']
-    #     nex = expression_parser(rest)
-    #
-    #     token = nex.pop(0)
-    #     print(token)
-    #     print(nex)
-    #     tmp.append(atom(token))
-    #
-    #     rest = rest[1:]
-    #
-    #
-    #     return [tmp, rest]
-
-        # return ['quote', rest]
 
     else:
         return [token, rest]
@@ -145,9 +155,9 @@ def any_one_parser_factory(*args):
     return lambda data: (reduce(lambda f, g: f if f(data)  else g, args)(data))
 
 value_parser = any_one_parser_factory(space_parser, bracket_parser, keyword_parser,
-                                      number_parser, identifier_parser)
+                                      number_parser, identifier_parser,double_quote_parser)
 key_parser = any_one_parser_factory(declarator_parser, lambda_parser, if_parser,
-                                    binary_parser, arithemetic_parser, unary_parser)
+                                    binary_parser, arithemetic_parser, unary_parser, minus_parser)
 
 def main():
     # file_name = input()
@@ -155,6 +165,7 @@ def main():
     with open(file_name, 'r') as f:
         data = f.read().strip()
     print(expression_parser(data))
+# 마지막에 flatten 하고 공백 제거해야함 --> interperter에서는 함
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,7 @@
 # interpreter
 
 import math
+import itertools
 import operator as op
 from functools import reduce
 from aparser import expression_parser
@@ -36,7 +37,9 @@ lisp_to_python_dic = {
     'print': lambda x: print(x),
     'null': lambda x: print("T") if x == "NIL" else print("F" + str(x)),
     'numberp': lambda x: number_procedure(x),
-    'zerop': lambda x: print("T") if str(x) == "[0]" else print("F" + str(x))
+    'zerop': lambda x: print("T") if str(x) == "[0]" else print("F" + str(x)),
+    'stringp' : lambda x : print("T") if(str(x[0]).startswith("\"")) else print("F")
+
 }
 
 lisp_to_python_dic.update(vars(math))
@@ -49,9 +52,9 @@ def number_procedure(x):
         print(str(type(int(str(x)[str(x).find("[") + 1: str(x).find("]")]))))
         if str(type(int(str(x)[str(x).find("[") + 1: str(x).find("]")]))) == "<class 'int'>":
             return print("T")
-
     except ValueError:
         return print("F")
+
 
 
 def lambda_procedure(parms, body, *args):
@@ -68,6 +71,9 @@ def eval(x, dic):
     global flaga
     flaga = 0
     if isinstance(x, str):
+
+        if(x.startswith("\"")):
+            return x
         return dic[x]
     elif isinstance(x, int):
         return x
@@ -103,6 +109,8 @@ def eval(x, dic):
         dic[var] = eval(exp, dic)
     elif x[0] == 'setq':
         (_, var, exp) = x
+        # print(var)
+        # print(exp)
 
         dic[var] = eval(exp, dic)
 
@@ -118,9 +126,9 @@ def eval(x, dic):
     elif x[0] == 'lambda':
         (_, parms, body, *args) = x
         return lambda_procedure(parms, body, args)
-    elif x[0] == 'car':
-        (_, var, exp) = x
-        dic[var] = eval(exp, dic)
+    # elif x[0] == 'car':
+    #     (_, var, exp) = x
+    #     dic[var] = eval(exp, dic)
     elif x[0] == 'atom':
         (_, var) = x
         if var[0] == "quote":
@@ -160,13 +168,16 @@ def eval(x, dic):
             return 'T'
         else:
             return 'NIL'
-    elif x[0] == 'stringp':
-        try:
-            (_, dq1, *_, dq2) = x
-            if (dq1 == '"' and dq2 == '"'):
-                return 'T'
-        except:
-            return 'NIL'
+    # elif x[0] == 'stringp':
+    #
+    #     try:
+    #         (_, dq1, *_, dq2) = x
+    #         print(_, dq1, *_, dq2)
+    #         print("ASdf")
+    #         if (dq1 == '"' and dq2 == '"'):
+    #             return 'T'
+    #     except:
+    #         return 'NIL'
 
     else:
         proc = eval(x[0], dic)
@@ -181,8 +192,9 @@ def eval(x, dic):
             # if(type(args) == list and args[0] is not None):
             #    return proc(sum(args,[]))
 
-            if (args[0] is not None and flaga):
-                return proc(sum(args, []))
+            if (len(args)!=0 and args[0] is not None and flaga):
+
+                return proc(list(itertools.chain(*args)))
             # else:
             #     return proc(args)
 
@@ -216,11 +228,21 @@ def eval(x, dic):
 
 def main():
     # file_name = input()
+    a = []
     file_name = "example2.lsp"
     with open(file_name, 'r') as f:
         data = f.read().strip()
-    # print(expression_parser(data).pop(0))
-    print(eval(expression_parser(data).pop(0), lisp_to_python_dic))
+
+    tmp = expression_parser(data)
+    input_data = list(itertools.chain(*tmp))
+    # print(input_data)
+    output = eval(input_data, lisp_to_python_dic)
+
+    # useless part
+    erase = [[None], "", None, []]
+    if(output not in erase):
+        print(output)
+    # print(eval(input_data, lisp_to_python_dic))
 
 
 if __name__ == "__main__":
