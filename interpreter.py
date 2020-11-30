@@ -49,7 +49,6 @@ lisp_to_python_dic.update(vars(math))
 
 dic_new2 = {}
 
-
 def number_procedure(x):
     try:
         if str(type(int(str(x)[str(x).find("[") + 1: str(x).find("]")]))) == "<class 'int'>":
@@ -123,8 +122,45 @@ def eval(x, dic):
         elif (len(x) == 4):
             (_, test, conseq, alt) = x
             exp = eval(conseq, dic) if eval(test, dic) else eval(alt, dic)
-        # print(x)
+    # print(x)
         return eval(exp, dic)
+
+    elif x[0] == 'cond':
+        if (len(x) == 4):
+            (_, test1, test2, test3 )=x
+            if eval(test1[0],dic):
+                exp = eval(test1[1], dic)
+                print (eval(exp, dic))
+            elif eval(test2[0],dic):
+                exp = eval(test2[1], dic)
+                print (eval(exp, dic))
+            elif eval(test3[0],dic):
+                exp = eval(test3[1], dic)
+                print (eval(exp, dic))
+
+
+
+    # elif x[0] == 'cond':
+    #     # 대괄호 빼줘야대여 찡긋 >.<
+    #     if (len(x) == 7):
+    #         # (_, big1, big2, big3 )=x
+    #         # print(big1)
+    #         # print(big2)
+    #         (_, test1, conseq1, test2, conseq2, test3, conseq3 ) = x
+    #         if eval(test1, dic):
+    #             exp = eval(conseq1, dic)
+    #             return eval(exp, dic)
+    #         elif eval(test2, dic):
+    #             exp = eval(conseq2, dic)
+    #             return eval(exp, dic)
+    #         elif eval(test3, dic):
+    #             exp = eval(conseq3, dic)
+    #             return eval(exp, dic)
+    #         # elif eval(test3, dic):
+    #         #     exp = eval(conseq3, dic)
+
+
+
 
     elif x[0] == 'define':
         (_, var, exp) = x

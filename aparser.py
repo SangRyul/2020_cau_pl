@@ -26,7 +26,7 @@ def identifier_parser(data):
     if identifier_match:
         return[data[:identifier_match.end()], data[identifier_match.end():]]
 
-keywords_li = ['reverse','car','define','lambda', '*', '+', '-', '/', '<', '>', '<=', '>=', '%', 'if',
+keywords_li = ['reverse','car','define','lambda', '*', '+', '-', '/', '<', '>', '<=', '>=', '=','%', 'if',
                'length', 'abs', 'append', 'pow', 'min', 'max', 'round', 'not', 'quote',
                'atom','null','NUMBERP','ZEROP','minusp','equal','stringp', 'member', '\'']
 
@@ -78,7 +78,7 @@ def minus_parser(data):
             #부호가 음수일경우
             number_parser(data)
 
-binary_operations = ['<=', '>=', '<', '>', 'pow', 'append']
+binary_operations = ['<=', '>=', '<', '>', 'pow', 'append','=']
 
 def binary_parser(data):
     for item in binary_operations:
