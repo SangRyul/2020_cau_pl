@@ -18,7 +18,7 @@ lisp_to_python_dic = {
     'begin': lambda *x: x[-1],
     'car': lambda x: x[0],
     'cdr': lambda x: x[1:],
-    'cons': lambda x, y: [x] + y,
+    'cons': lambda x: print(x),
     'reverse': lambda x: x[::-1],
     'eq?': op.is_,
     'equal?': op.eq,
@@ -34,12 +34,15 @@ lisp_to_python_dic = {
     'procedure?': callable,
     'round': round,
     'symbol?': lambda x: isinstance(x, str),
-    'print': lambda x: print(x),
+    'print': lambda x: print(x[0]),
     'null': lambda x: print("T") if x == "NIL" else print("F" + str(x)),
     'numberp': lambda x: number_procedure(x),
     'zerop': lambda x: print("T") if str(x) == "[0]" else print("F" + str(x)),
     'stringp' : lambda x : print("T") if(str(x[0]).startswith("\"")) else print("F"),
-    'member' : lambda x : x[1][x[1].index(x[0]):] if x[0] in x[1] else print("NIL")
+    'member' : lambda x : x[1][x[1].index(x[0]):] if x[0] in x[1] else print("NIL"),
+    'assoc' : lambda x : assoc_procedure(x),
+    'remove' : lambda x : remove_procedure(x),
+    'subst' : lambda x : subst_procedure(x)
 
 }
 
@@ -47,14 +50,41 @@ lisp_to_python_dic.update(vars(math))
 
 dic_new2 = {}
 
+def subst_procedure(x):
+    if(x[1] in x[2]):
+        for k in range(0,len(x[2])):
+            if(x[1] == x[2][k]):
+                x[2][k] = x[0]
+        print(x[2])
+    else:
+        print("NIL")
+
+def remove_procedure(x):
+    tmp = x[1][:]
+    value = x[0]
+    if(value in tmp):
+        tmp.remove(value)
+        print(tmp)
+        return
+    else:
+        print("NIL")
+
+def assoc_procedure(x):
+    for k in x[1]:
+        if(k[0] == x[0]):
+            return k
+    return "NIL"
 
 def number_procedure(x):
     try:
-        print(str(type(int(str(x)[str(x).find("[") + 1: str(x).find("]")]))))
         if str(type(int(str(x)[str(x).find("[") + 1: str(x).find("]")]))) == "<class 'int'>":
             return print("T")
     except ValueError:
-        return print("F")
+        try:
+            if str(type(float(str(x)[str(x).find("[") + 1: str(x).find("]")]))) == "<class 'float'>":
+                return print("T")
+        except ValueError:
+            return print("F")
 
 
 
@@ -72,10 +102,12 @@ def eval(x, dic):
     global flaga
     flaga = 0
     if isinstance(x, str):
-
         if(x.startswith("\"")):
             return x
-        return dic[x]
+        try:
+            return dic[x]
+        except:
+            return x
     elif isinstance(x, int):
         return x
     elif not isinstance(x, list):
@@ -92,8 +124,6 @@ def eval(x, dic):
         # else:
         (_, exp) = x
         return exp
-    elif x[0] == '\'':
-        (_, exp) = x
     elif x[0] == 'if':
         if (len(x) == 3):
             (_, test, conseq) = x
@@ -120,8 +150,7 @@ def eval(x, dic):
         dic[var[1]] = eval(exp, dic)
         # quote 붙을거 예상해서 1번으로 가야함
         # print(_, var, exp);
-    elif x[0] == 'remove':
-        pass
+
 
     elif x[0] == 'lambda':
         (_, parms, body, *args) = x
@@ -182,28 +211,18 @@ def eval(x, dic):
     else:
 
         proc = eval(x[0], dic)
-
         args = [eval(exp, dic) for exp in x[1:]]
 
-
-        # print(proc(args))
         # return proc(args)
         try:
             # if(type(args) == list and args[0] is not None):
             #    return proc(sum(args,[]))
-
-            if (len(args)!=0 and args[0] is not None and flaga):
-
+            try:
+                return proc(args)
+            except:
                 return proc(list(itertools.chain(*args)))
-            # else:
-            #     return proc(args)
-
-            # if(args[0] is not None):
-            #     return proc(args)
-            # else:
-            #     # print(args)
-            #     return
-            return proc(args)
+                #if (len(args)!=0 and args[0] is not None and flaga):
+                    #return proc(list(itertools.chain(*args)))
         except TypeError:
             return args
             pass
@@ -234,6 +253,7 @@ def main():
         data = f.read().strip()
 
     tmp = expression_parser(data)
+
     if(tmp == None):
         print("NIL")
         return
@@ -242,7 +262,7 @@ def main():
     output = eval(input_data, lisp_to_python_dic)
 
     # useless part
-    erase = [[None], "", None, []]
+    erase = [[None], "", None, [], [None, None]]
     if(output not in erase):
         print(output)
     # print(eval(input_data, lisp_to_python_dic))
