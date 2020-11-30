@@ -1,3 +1,1 @@
-(
-(numberp x)
-)
+( minusp -3.3 )
