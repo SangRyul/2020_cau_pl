@@ -1,4 +1,4 @@
-# interpreter
+#-*-coding utf-8-*-
 
 import math
 import itertools
@@ -37,10 +37,10 @@ lisp_to_python_dic = {
     'round': round,
     'symbol?': lambda x: isinstance(x, str),
     'print': lambda x: print(x[0]),
-    'null': lambda x: print("T") if x == "NIL" else print("F" + str(x)),
+    'null': lambda x: print("T") if x == "NIL" else print("F"),
     'numberp': lambda x: number_procedure(x),
-    'zerop': lambda x: print("T") if str(x) == "[0]" else print("F" + str(x)),
-    'stringp' : lambda x : print("T") if(str(x[0]).startswith("\"")) else print("F"),
+    'zerop': lambda x: print("T") if str(x) == "[0]" else print("F"),
+    'stringp' : lambda x : print("T") if(str(x[0]).startswith("\"")) else print("NIL"),
     'minusp': lambda x: minusp_procedure(x),
     'equal': lambda x: print("T") if x[0] == x[1] else print("F"),
     'member' : lambda x : x[1][x[1].index(x[0]):] if x[0] in x[1] else print("NIL"),
@@ -137,13 +137,16 @@ def lambda_procedure(parms, body, *args):
 
 
 def eval(x, dic):
-    # print(x)
+
     global flaga
     flaga = 0
     if isinstance(x, str):
         if(x.startswith("\"")):
             return x
         try:
+            if(isinstance(dic[x], int)):
+                print(dic[x])
+            #print(dic[x])
             return dic[x]
         except:
             return x
@@ -151,6 +154,7 @@ def eval(x, dic):
         return x
     elif not isinstance(x, list):
         return x
+
     elif x[0] == 'quote':
         flaga = 1
         # quote 다음에 하나라면 변수로 취급해야한다.
@@ -170,7 +174,6 @@ def eval(x, dic):
         elif (len(x) == 4):
             (_, test, conseq, alt) = x
             exp = eval(conseq, dic) if eval(test, dic) else eval(alt, dic)
-        # print(x)
         return eval(exp, dic)
 
     elif x[0] == 'define':
@@ -178,9 +181,6 @@ def eval(x, dic):
         dic[var] = eval(exp, dic)
     elif x[0] == 'setq':
         (_, var, exp) = x
-        # print(var)
-        # print(exp)
-
         dic[var] = eval(exp, dic)
 
     elif x[0] == 'set':
@@ -235,47 +235,45 @@ def eval(x, dic):
             return args
             pass
 
-
-# print(eval([['setq', 'foo', ['quote', [1, 2, 3]]], ['print', 'foo']], lisp_to_python_dic))
-#
-# print(eval(['setq', 'x', 2], lisp_to_python_dic))
-# print(eval(['define', 'y', 5], lisp_to_python_dic))
-# print(eval(['print', ['+', 'x', 2]], lisp_to_python_dic))
-# print(eval(['lambda', ['x', 'y'], ['*', 'x', 'y'], 5, 2], lisp_to_python_dic))
-#
-# print(eval(['*', ['+', 5, 7], ['/', 4, 2]], lisp_to_python_dic))
-#
-# print(eval(['*', 'x', 'x'], lisp_to_python_dic))
-#
-# print(eval(expression_parser('(+ 5 (* 3 2) )')[0], lisp_to_python_dic))
-#
-# print(eval(['>', 5 ,10], lisp_to_python_dic))
-#
-# print(eval(['if', ['<', 5 ,10], ['+', 10, 5],['-', 10, 5]], lisp_to_python_dic))
-
-def main():
-    # file_name = input()
-    a = []
-    file_name = "example2.lsp"
-    with open(file_name, 'r') as f:
-        data = f.read().strip()
-
+def run(data):
     tmp = expression_parser(data)
 
-    if(tmp == None):
+    if (tmp == None):
         print("NIL")
         return
-    #print()
+
     input_data = list(itertools.chain(*tmp))
-    print(input_data)
+    input_data = [x for x in input_data if x != ';']
+
     output = eval(input_data, lisp_to_python_dic)
 
-    # useless part
-    erase = [[None], "", None, [], [None, None]]
-    if(output not in erase):
+    erase = [[None], "", None, [], [None, None], [[]]]
+    if (output not in erase):
         print(output)
-    # print(eval(input_data, lisp_to_python_dic))
 
+def main():
+
+    print("---- lisp interpreter -----")
+    print("Please input a number")
+    user_input = int(input("1: file mode / 2: repl mode / other number: quit program => "))
+    while(True):
+        data = None
+        if(user_input == 1):
+            file_name = "input.lsp"
+            with open(file_name, 'r', encoding='UTF8') as f:
+                data = f.read().splitlines()
+                for data in data:
+                    if (data.startswith(";") or data==''):
+                        continue
+                    run(data)
+            break;
+
+        elif(user_input == 2):
+            data = input(">>> ")
+            run(data)
+        else:
+            print("bye")
+            break
 
 if __name__ == "__main__":
     main()
