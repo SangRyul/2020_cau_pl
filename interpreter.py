@@ -52,7 +52,7 @@ lisp_to_python_dic = {
 }
 
 lisp_to_python_dic.update(vars(math))
-
+repl_mode_buffer = []
 dic_new2 = {}
 
 def cdr_procedure(x):
@@ -234,13 +234,16 @@ def eval(x, dic):
             (_, test1, test2, test3) = x
             if eval(test1[0], dic):
                 exp = eval(test1[1], dic)
-                print(eval(exp, dic))
+                return eval(exp, dic)
+                #print(eval(exp, dic))
             elif eval(test2[0], dic):
                 exp = eval(test2[1], dic)
-                print(eval(exp, dic))
+                return eval(exp, dic)
+                #print(eval(exp, dic))
             elif eval(test3[0], dic):
                 exp = eval(test3[1], dic)
-                print(eval(exp, dic))
+                return eval(exp, dic)
+                #print(eval(exp, dic))
 
     else:
 
@@ -284,6 +287,7 @@ def run(data):
     input_data = list(itertools.chain(*tmp))
     input_data = [x for x in input_data if x != ';']
 
+
     output = eval(input_data, lisp_to_python_dic)
 
     erase = [[None], "", None, [], [None, None], [[]]]
@@ -292,6 +296,45 @@ def run(data):
         output_print(output)
         # print(output)
 
+
+def input_check_valid(data, user_input):
+
+    multi_line_data_buffer = ""
+    count_left_bracket = 0
+    count_right_bracket = 0
+
+    if(user_input == 1):
+        pass
+        # file mode
+    elif(user_input == 2):
+        repl_mode_buffer.append(data)
+        data = repl_mode_buffer
+        # repl mode
+
+    for data in data:
+        # multiline 받는 명령어도 축가해야함
+        # (의 숫자와 )의 숫자를 비교할것
+        if (data.startswith(";") or data == ''):
+            continue
+        for x in data:
+            if (x == '('):
+                count_left_bracket += 1
+            elif (x == ')'):
+                count_right_bracket += 1
+
+        if (count_left_bracket == count_right_bracket):
+            multi_line_data_buffer += data
+            run(multi_line_data_buffer)
+            # initialize again
+            multi_line_data_buffer = ""
+            count_left_bracket, count_right_bracket = (0, 0)
+        else:
+
+            multi_line_data_buffer += data
+            multi_line_data_buffer += " "
+
+        # (의 숫자와 )자의 숫자가 동일해 졌을때 run에 data를 날려야 한다.
+        # run(data)
 def main():
 
     print("---- lisp interpreter -----")
@@ -303,17 +346,12 @@ def main():
             file_name = "input.lsp"
             with open(file_name, 'r', encoding='UTF8') as f:
                 data = f.read().splitlines()
-                for data in data:
-                    # multiline 받는 명령어도 축가해야함
-                    #(의 숫자와 )의 숫자를 비교할것
-                    if (data.startswith(";") or data==''):
-                        continue
-                    run(data)
+                input_check_valid(data, user_input)
             break;
 
         elif(user_input == 2):
             data = input(">>> ")
-            run(data)
+            input_check_valid(data, user_input)
         else:
             print("bye")
             break

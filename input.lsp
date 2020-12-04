@@ -38,7 +38,7 @@ X
 
 ; LENGTH
 (LENGTH '(A B C));
-(LENGTH '((A B C));
+(LENGTH '((A B C)));
 
 ; MEMBER
 (SETQ CLUB '(TOM HARRY JOHN DANIEL))
@@ -95,7 +95,7 @@ X
 (SETQ X 4)
 (IF (> X 3) (PRINT X));
 (SETQ X 2)
-(IF (> X 3) (PRINT X) (+ X 5)
+(IF (> X 3) (PRINT X) (+ X 5))
 
 ;COND
 (COND ((> X 0) (+ X 1))

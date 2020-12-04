@@ -32,7 +32,7 @@ keywords_li = ['reverse','car', 'cdr', 'caddr', 'cons', 'nth', 'reverse','eq?','
                'length', 'abs', 'append', 'pow', 'min', 'max', 'round', 'not', 'quote', 'list', 'list?', 'map',
                'atom','null','minusp','equal','stringp', 'member', '\'', 'apply', 'begin',
                'not', 'null?', 'number?', 'procedure', 'round', 'symbol?', 'print', 'null', 'numberp', 'zerop',
-               'stringp', 'minusp', 'equal', 'member', 'assoc', 'remove', 'subst', 'setq', 'set', ]
+               'stringp', 'minusp', 'equal', 'member', 'assoc', 'remove', 'subst', 'setq', 'set', 'cond']
 upper_token = [x.upper() for x in keywords_li]
 keywords_li.extend(upper_token)
 
