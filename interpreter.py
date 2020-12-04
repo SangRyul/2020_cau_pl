@@ -5,6 +5,7 @@ import itertools
 import operator as op
 from functools import reduce
 from aparser import expression_parser
+import numpy as np
 
 lisp_to_python_dic = {
     '+': lambda *x: reduce(op.add, *x), '-': lambda *x: reduce(op.sub, *x),
@@ -93,7 +94,9 @@ def subst_procedure(x):
         for k in range(0,len(x[2])):
             if(x[1] == x[2][k]):
                 x[2][k] = x[0]
-        print(x[2])
+        output_print(x[2])
+
+        #print(x[2])
     else:
         print("NIL")
 
@@ -104,7 +107,9 @@ def remove_procedure(x):
         for item in tmp:
             if item == value:
                 tmp.remove(value)
-        print(tmp)
+        output_print(tmp)
+        # print(type(tmp))
+        # print(tmp)
     else:
         print("NIL")
 
@@ -135,6 +140,17 @@ def lambda_procedure(parms, body, *args):
     dic_new2.update(dic_new)
     return eval(body, dic_new2)
 
+def output_print(x):
+    if (isinstance(x, list)):
+        x = np.array(x)
+        x = x.flatten()
+
+        # for item in x:
+        #     return
+        new_output = '(' + ' '.join(map(str,x)) + ')'
+        print(new_output)
+    else:
+        print(x)
 
 def eval(x, dic):
 
@@ -144,8 +160,10 @@ def eval(x, dic):
         if(x.startswith("\"")):
             return x
         try:
+            '''
             if(isinstance(dic[x], int)):
                 print(dic[x])
+            '''
             #print(dic[x])
             return dic[x]
         except:
@@ -181,6 +199,14 @@ def eval(x, dic):
         dic[var] = eval(exp, dic)
     elif x[0] == 'setq':
         (_, var, exp) = x
+
+        if(isinstance(exp, list)):
+            output_print(exp[1])
+        else:
+            print(exp)
+
+        # if(exp[0] == 'quote'):
+        #     print(exp[1])
         dic[var] = eval(exp, dic)
 
     elif x[0] == 'set':
@@ -235,6 +261,19 @@ def eval(x, dic):
             return args
             pass
 
+
+    '''
+    if (isinstance(x, list)== True) :
+        try:
+            # return ('('+' '.join(x)+')')
+            return (' '.join(x))
+
+        except TypeError:
+            x_ints = [str(int) for int in x]
+            return ('('+' '.join(x_ints)+')')
+    elif (isinstance(x, list) == False):
+        return x
+    '''
 def run(data):
     tmp = expression_parser(data)
 
@@ -249,7 +288,9 @@ def run(data):
 
     erase = [[None], "", None, [], [None, None], [[]]]
     if (output not in erase):
-        print(output)
+
+        output_print(output)
+        # print(output)
 
 def main():
 
@@ -263,6 +304,8 @@ def main():
             with open(file_name, 'r', encoding='UTF8') as f:
                 data = f.read().splitlines()
                 for data in data:
+                    # multiline 받는 명령어도 축가해야함
+                    #(의 숫자와 )의 숫자를 비교할것
                     if (data.startswith(";") or data==''):
                         continue
                     run(data)
