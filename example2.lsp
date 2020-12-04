@@ -1,1 +1,1 @@
-( minusp -3.3 )
+(car '(X Y Z))

@@ -16,7 +16,7 @@ lisp_to_python_dic = {
     'append': lambda *x: reduce(op.add, *x),
     'apply': lambda x: x[0](x[1:]),
     'begin': lambda *x: x[-1],
-    'car': lambda x: x[0],
+    'car': lambda x: x[0][0],
     'cdr': lambda x: x[1:],
     'cons': lambda x: list(itertools.chain.from_iterable(x)),
     'nth': lambda x: nth_procedure(x),
