@@ -20,10 +20,10 @@ lisp_to_python_dic = {
     'cdr': lambda x: cdr_procedure(x),
     'cons': lambda x: list(itertools.chain.from_iterable(x)),
     'nth': lambda x: nth_procedure(x),
-    'reverse': lambda x: x[::-1],
+    'reverse': lambda x: x[0][::-1],
     'eq?': op.is_,
     'equal?': op.eq,
-    'length': len,
+    'length': lambda x: len(x[0]),
     'list': lambda *x: list(x),
     'list?': lambda x: isinstance(x, list),
     'map': map,
@@ -59,9 +59,16 @@ def cdr_procedure(x):
         print(i, end=' ')
 
 def nth_procedure(x):
-    list = x[1]
+    lista = x[1]
     nth = x[0]
-    print(list[nth])
+    if nth >= len(lista):
+        print('NIL')
+    else:
+        print(lista[nth])
+
+    # print(lista)
+    # print(isinstance(x, list))
+
 
 def minusp_procedure(x):
     try:

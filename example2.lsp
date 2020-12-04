@@ -1,1 +1,1 @@
-(cdr '(X Y Z))
+(atom X)
