@@ -17,7 +17,7 @@ lisp_to_python_dic = {
     'apply': lambda x: x[0](x[1:]),
     'begin': lambda *x: x[-1],
     'car': lambda x: x[0][0],
-    'cdr': lambda x: x[1:],
+    'cdr': lambda x: cdr_procedure(x),
     'cons': lambda x: list(itertools.chain.from_iterable(x)),
     'nth': lambda x: nth_procedure(x),
     'reverse': lambda x: x[::-1],
@@ -52,6 +52,11 @@ lisp_to_python_dic = {
 lisp_to_python_dic.update(vars(math))
 
 dic_new2 = {}
+
+def cdr_procedure(x):
+    list = x[0][1:]
+    for i in list:
+        print(i, end=' ')
 
 def nth_procedure(x):
     list = x[1]

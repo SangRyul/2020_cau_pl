@@ -1,1 +1,1 @@
-(car '(X Y Z))
+(cdr '(X Y Z))
