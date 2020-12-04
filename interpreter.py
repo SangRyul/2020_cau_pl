@@ -17,7 +17,8 @@ lisp_to_python_dic = {
     'apply': lambda x: x[0](x[1:]),
     'begin': lambda *x: x[-1],
     'car': lambda x: x[0][0],
-    'cdr': lambda x: cdr_procedure(x),
+    'cdr': lambda x: x[0][1:],
+    'caddr': lambda x: ((x[0][1:])[1:])[0],
     'cons': lambda x: list(itertools.chain.from_iterable(x)),
     'nth': lambda x: nth_procedure(x),
     'reverse': lambda x: x[0][::-1],
@@ -61,13 +62,13 @@ def cdr_procedure(x):
 def nth_procedure(x):
     lista = x[1]
     nth = x[0]
-    if nth >= len(lista):
+
+    if (isinstance(lista, list) == False):
+        print('Error')
+    elif nth >= len(lista):
         print('NIL')
     else:
         print(lista[nth])
-
-    # print(lista)
-    # print(isinstance(x, list))
 
 
 def minusp_procedure(x):
@@ -98,11 +99,12 @@ def subst_procedure(x):
 
 def remove_procedure(x):
     tmp = x[1][:]
-    value = x[0]
+    value = x[0] # 이게 제거 대상 요소
     if(value in tmp):
-        tmp.remove(value)
+        for item in tmp:
+            if item == value:
+                tmp.remove(value)
         print(tmp)
-        return
     else:
         print("NIL")
 
@@ -201,49 +203,18 @@ def eval(x, dic):
             return "True"
         else:
             return "False"
-    # elif x[0] == 'null':
-    #     (_, var) = x
-    #     if var == "NIL":
-    #         return "T"
-    #     else:
-    #         return "F"
-    # elif x[0] == 'NUMBERP':
-    #     (_, var) = x
-    #     if str(type(var)) == "<class 'int'>":
-    #         return "T"
-    #     else:
-    #         return "F"
-    # elif x[0] == 'ZEROP':
-    #     (_, var) = x
-    #     if var == 0 :
-    #         return "T"
-    #     else:
-    #         return "ERROR"
-
-    # elif x[0] == 'minusp':
-    #     try:
-    #         (_, var, exp) = x
-    #         if (var == '-'):
-    #             if (isinstance(exp, int)):
-    #                 return 'T'
-    #     except:
-    #         return 'Error'
-    # elif x[0] == 'equal':
-    #     (_, var, exp) = x
-    #     if (var == exp):
-    #         return 'T'
-    #     else:
-    #         return 'NIL'
-    # elif x[0] == 'stringp':
-    #
-    #     try:
-    #         (_, dq1, *_, dq2) = x
-    #         print(_, dq1, *_, dq2)
-    #         print("ASdf")
-    #         if (dq1 == '"' and dq2 == '"'):
-    #             return 'T'
-    #     except:
-    #         return 'NIL'
+    elif x[0] == 'cond':
+        if (len(x) == 4):
+            (_, test1, test2, test3) = x
+            if eval(test1[0], dic):
+                exp = eval(test1[1], dic)
+                print(eval(exp, dic))
+            elif eval(test2[0], dic):
+                exp = eval(test2[1], dic)
+                print(eval(exp, dic))
+            elif eval(test3[0], dic):
+                exp = eval(test3[1], dic)
+                print(eval(exp, dic))
 
     else:
 
@@ -294,6 +265,7 @@ def main():
     if(tmp == None):
         print("NIL")
         return
+    #print()
     input_data = list(itertools.chain(*tmp))
     print(input_data)
     output = eval(input_data, lisp_to_python_dic)
