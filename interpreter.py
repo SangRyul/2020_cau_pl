@@ -52,7 +52,6 @@ lisp_to_python_dic = {
 }
 
 lisp_to_python_dic.update(vars(math))
-repl_mode_buffer = []
 dic_new2 = {}
 
 def cdr_procedure(x):
@@ -296,7 +295,7 @@ def run(data):
         output_print(output)
         # print(output)
 
-
+repl_mode_buffer = []
 def input_check_valid(data, user_input):
 
     multi_line_data_buffer = ""
@@ -327,6 +326,7 @@ def input_check_valid(data, user_input):
             run(multi_line_data_buffer)
             # initialize again
             multi_line_data_buffer = ""
+            repl_mode_buffer.clear()
             count_left_bracket, count_right_bracket = (0, 0)
         else:
 
