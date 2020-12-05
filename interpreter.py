@@ -10,8 +10,8 @@ import numpy as np
 lisp_to_python_dic = {
     '+': lambda *x: reduce(op.add, *x), '-': lambda *x: reduce(op.sub, *x),
     '*': lambda *x: reduce(op.mul, *x), '/': lambda *x: reduce(op.truediv, *x),
-    '>': lambda *x: reduce(op.gt, *x), '<': lambda *x: reduce(op.lt, *x),
-    '>=': lambda *x: reduce(op.ge, *x), '<=': lambda *x: reduce(op.le, *x),
+    '>': lambda x: op.gt(x[0], x[1]), '<': lambda x: op.lt(x[0], x[1]),
+    '>=': lambda *x: op.ge(x[0], x[1]), '<=': lambda *x: op.le(x[0], x[1]),
     '=': lambda *x: reduce(op.eq, *x),
     'abs': abs,
     'append': lambda *x: reduce(op.add, *x),
@@ -40,7 +40,7 @@ lisp_to_python_dic = {
     'print': lambda x: print(x[0]),
     'null': lambda x: print("T") if x == "NIL" else print("F"),
     'numberp': lambda x: number_procedure(x),
-    'zerop': lambda x: print("T") if str(x) == "[0]" else print("F"),
+    'zerop': lambda x: print("T") if x[0] == 0 else print("F"), 
     'stringp' : lambda x : print("T") if(str(x[0]).startswith("\"")) else print("NIL"),
     'minusp': lambda x: minusp_procedure(x),
     'equal': lambda x: print("T") if x[0] == x[1] else print("F"),
@@ -248,7 +248,7 @@ def eval(x, dic):
 
         proc = eval(x[0], dic)
         args = [eval(exp, dic) for exp in x[1:]]
-
+        print(args)
         # return proc(args)
         try:
             # if(type(args) == list and args[0] is not None):
