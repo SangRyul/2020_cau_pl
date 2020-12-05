@@ -325,6 +325,12 @@ def input_check_valid(data, user_input):
             multi_line_data_buffer += data
             run(multi_line_data_buffer)
             # initialize again
+            # no bracket
+            if(count_left_bracket == 0):
+                try:
+                    print(lisp_to_python_dic[data])
+                except:
+                    print("The Variable IS UNBOUND")
             multi_line_data_buffer = ""
             repl_mode_buffer.clear()
             count_left_bracket, count_right_bracket = (0, 0)
