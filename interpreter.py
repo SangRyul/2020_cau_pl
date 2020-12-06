@@ -1,4 +1,16 @@
-#-*-coding utf-8-*-
+
+# 프로그래밍 언어론 04분반 PL Team Project
+# Lisp Interpreter 구현 프로젝트
+
+# 참여자:
+# 창의ICT공과대학 컴퓨터공학부(컴퓨터공학전공) 20165020 김상렬
+# 창의ICT공과대학 소프트웨어학부 20181154 선민승
+# 소프트웨어대학 소프트웨어학부 20190143 고은서
+
+# 파일 정보:
+# 프로그램 명: interpreter.py
+# 역할: interpreter
+# 생성 날짜: 2020.11.10
 
 import math
 import itertools
@@ -7,70 +19,80 @@ from functools import reduce
 from aparser import expression_parser
 import numpy as np
 
+# eval 함수가 입력받는 x에 따라 실핼시킬 세부 함수(procedures).
 lisp_to_python_dic = {
     '+': lambda *x: reduce(op.add, *x), '-': lambda *x: reduce(op.sub, *x),
     '*': lambda *x: reduce(op.mul, *x), '/': lambda *x: reduce(op.truediv, *x),
     '>': lambda x: op.gt(x[0], x[1]), '<': lambda x: op.lt(x[0], x[1]),
     '>=': lambda *x: op.ge(x[0], x[1]), '<=': lambda *x: op.le(x[0], x[1]),
     '=': lambda *x: reduce(op.eq, *x),
-    'abs': abs,
-    'append': lambda *x: reduce(op.add, *x),
-    'apply': lambda x: x[0](x[1:]),
-    'begin': lambda *x: x[-1],
-    'car': lambda x: x[0][0],
-    'cdr': lambda x: x[0][1:],
-    'caddr': lambda x: ((x[0][1:])[1:])[0],
-    'cons': lambda x: list(itertools.chain.from_iterable(x)),
-    'nth': lambda x: nth_procedure(x),
-    'reverse': lambda x: x[0][::-1],
-    'eq?': op.is_,
-    'equal?': op.eq,
-    'length': lambda x: len(x[0]),
-    'list': lambda *x: list(x),
-    'list?': lambda x: isinstance(x, list),
-    'map': map,
-    'max': max,
-    'min': min,
-    'not': op.not_,
-    'null?': lambda x: x == [],
-    'number?': lambda x: isinstance(x, int) or isinstance(x, float),
-    'procedure?': callable,
-    'round': round,
-    'symbol?': lambda x: isinstance(x, str),
-    'print': lambda x: print(x[0]),
-    'null': lambda x: print("T") if x == "NIL" else print("F"),
-    'numberp': lambda x: number_procedure(x),
-    'zerop': lambda x: print("T") if x[0] == 0 else print("F"),
-    'stringp' : lambda x : print("T") if(str(x[0]).startswith("\"")) else print("NIL"),
-    'minusp': lambda x: minusp_procedure(x),
-    'equal': lambda x: print("T") if x[0] == x[1] else print("F"),
-    'member' : lambda x : x[1][x[1].index(x[0]):] if x[0] in x[1] else print("NIL"),
-    'assoc' : lambda x : assoc_procedure(x),
-    'remove' : lambda x : remove_procedure(x),
-    'subst' : lambda x : subst_procedure(x)
 
+    # append - 주어진 여러 개의 리스트들을 하나의 리스트로 만듬, add 사용
+    'append': lambda *x: reduce(op.add, *x),
+
+    # car 함수 - 리스트의 첫번째 원소를 리턴
+    'car': lambda x: x[0][0],
+    # cdr 함수 - 리스트의 첫번째 원소를 제외한 나머지 값들을 리스트로 리턴
+    'cdr': lambda x: x[0][1:],
+    # caddr 함수 - CAR과 CDR을 혼합 사용한 경우
+    'caddr': lambda x: ((x[0][1:])[1:])[0],
+    # CONS 함수 - 기존의 리스트에 새로운 원소 추가하여 리스트 생성
+    'cons': lambda x: list(itertools.chain.from_iterable(x)),
+    # NTH 함수 - N번째 원소 리턴
+    'nth': lambda x: nth_procedure(x),
+    # REVERSE 함수 - 리스트 안의 원소의 순서를 거꾸로 바꿈
+    'reverse': lambda x: x[0][::-1],
+    # LENGTH 함수 - 주어진 리스트 내의 원소 개수 리턴
+    'length': lambda x: len(x[0]),
+    # LIST 함수 - 원소들을 모아서 새로운 리스트 구조 생성
+    'list': lambda *x: list(x),
+    # PRINT 함수 - 원소 출력
+    'print': lambda x: print(x[0]),
+    # NULL 함수 - X가 NIL일때만 참을 반환
+    'null': lambda x: print("T") if x[0] == "NIL" else print("F"),
+    # NUMBERP 함수 - X가 숫자일 때만 참을 반환
+    'numberp': lambda x: number_procedure(x),
+    # ZEROP 함수 - X가 0일 때만 참을 반환
+    'zerop': lambda x: print("T") if x[0] == 0 else print("F"),
+    # STRINGP 함수 - X가 STRINGP일 때 참을 반환
+    'stringp' : lambda x : print("T") if(str(x[0]).startswith("\"")) else print("NIL"),
+    # MINUSP 함수 - X가 음수일 때만 참을 반환
+    'minusp': lambda x: minusp_procedure(x),
+    # EQUAL 함수 - X와 Y가 같으면 참을 반환
+    'equal': lambda x: print("T") if x[0] == x[1] else print("F"),
+    # MEMBER 함수 - 주어진 리스트 내에 어떤 원소가 있는지 확인
+    'member' : lambda x : x[1][x[1].index(x[0]):] if x[0] in x[1] else print("NIL"),
+    # ASSOC 함수 -  리스트를 원소로 갖는 리스트에서 원소 리스트의 첫번째 원소를 DB에서의 KEY처럼 사용하여 원하는 리스트를 찾음
+    'assoc' : lambda x : assoc_procedure(x),
+    # REMOVE 함수 - 첫번째 인자를 두번째 인자로 받는 리스트에서 찾아 모두 제거하는 함수
+    'remove' : lambda x : remove_procedure(x),
+    # SUBST 함수 - 세번째 인자에서 두번째 인자를 찾아 첫번째 인자로 대치
+    'subst' : lambda x : subst_procedure(x)
 }
 
 lisp_to_python_dic.update(vars(math))
 dic_new2 = {}
 
+# CDR 처리 함수
 def cdr_procedure(x):
     list = x[0][1:]
     for i in list:
         print(i, end=' ')
 
+# NTH 처리 함수
 def nth_procedure(x):
     lista = x[1]
     nth = x[0]
-
+    # list인지 확인
     if (isinstance(lista, list) == False):
         print('Error')
+    # list 범위 넘어 있는 것이 n으로 들어오게 되는지 확인
     elif nth >= len(lista):
         print('NIL')
     else:
         print(lista[nth])
 
-
+# minusp 처리 함수
 def minusp_procedure(x):
     try:
         if str(type(int(str(x)[str(x).find("[") + 1: str(x).find("]")]))) == "<class 'int'>":
@@ -78,6 +100,7 @@ def minusp_procedure(x):
                 print("T")
             else:
                 print("F")
+    # float 이면 value error 가 나기 때문에 예외 처리
     except ValueError:
         try:
             if str(type(float(str(x)[str(x).find("[") + 1: str(x).find("]")]))) == "<class 'float'>":
@@ -95,7 +118,6 @@ def subst_procedure(x):
                 x[2][k] = x[0]
         output_print(x[2])
 
-        #print(x[2])
     else:
         print("NIL")
 
@@ -107,8 +129,6 @@ def remove_procedure(x):
             if item == value:
                 tmp.remove(value)
         output_print(tmp)
-        # print(type(tmp))
-        # print(tmp)
     else:
         print("NIL")
 
@@ -130,7 +150,6 @@ def number_procedure(x):
             return print("F")
 
 
-
 def lambda_procedure(parms, body, *args):
     dic_new = {}
     for k, v in list(zip(parms, list(*args))):
@@ -144,8 +163,6 @@ def output_print(x):
         x = np.array(x)
         x = x.flatten()
 
-        # for item in x:
-        #     return
         new_output = '(' + ' '.join(map(str,x)) + ')'
         print(new_output)
     else:
@@ -177,11 +194,6 @@ def eval(x, dic):
         # quote 다음에 하나라면 변수로 취급해야한다.
         # quote 다음에 문자열 변수가 오면 문자열 취급
         # qoute 다음에 괄호안에 둘러싸인 리스트 형태로 오면 괄호 취급
-        # if isinstance(x[1],str):
-        #     dic[x[1]] = x[1]
-        #     print(dic[x[1]])
-        #     return dic[x[1]]
-        # else:
         (_, exp) = x
         return exp
     elif x[0] == 'if':
@@ -204,24 +216,15 @@ def eval(x, dic):
         else:
             print(exp)
 
-        # if(exp[0] == 'quote'):
-        #     print(exp[1])
         dic[var] = eval(exp, dic)
 
     elif x[0] == 'set':
         (_, var, exp) = x
-        # print(var, exp)
         dic[var[1]] = eval(exp, dic)
-        # quote 붙을거 예상해서 1번으로 가야함
-        # print(_, var, exp);
-
 
     elif x[0] == 'lambda':
         (_, parms, body, *args) = x
         return lambda_procedure(parms, body, args)
-    # elif x[0] == 'car':
-    #     (_, var, exp) = x
-    #     dic[var] = eval(exp, dic)
     elif x[0] == 'atom':
         (_, var) = x
         if (str(type(var))) == "<class 'int'>":
@@ -242,48 +245,38 @@ def eval(x, dic):
             if eval(test1[0], dic):
                 exp = eval(test1[1], dic)
                 return eval(exp, dic)
-                #print(eval(exp, dic))
+
             elif eval(test2[0], dic):
                 exp = eval(test2[1], dic)
                 return eval(exp, dic)
-                #print(eval(exp, dic))
+
             elif eval(test3[0], dic):
                 exp = eval(test3[1], dic)
                 return eval(exp, dic)
-                #print(eval(exp, dic))
+
 
     else:
 
         proc = eval(x[0], dic)
         args = [eval(exp, dic) for exp in x[1:]]
+<<<<<<< HEAD
         print(args)
         # return proc(args)
+=======
+
+
+>>>>>>> origin/merge/semifinal
         try:
-            # if(type(args) == list and args[0] is not None):
-            #    return proc(sum(args,[]))
             try:
                 return proc(args)
             except:
                 return proc(list(itertools.chain(*args)))
-                #if (len(args)!=0 and args[0] is not None and flaga):
-                    #return proc(list(itertools.chain(*args)))
+
         except TypeError:
             return args
             pass
 
 
-    '''
-    if (isinstance(x, list)== True) :
-        try:
-            # return ('('+' '.join(x)+')')
-            return (' '.join(x))
-
-        except TypeError:
-            x_ints = [str(int) for int in x]
-            return ('('+' '.join(x_ints)+')')
-    elif (isinstance(x, list) == False):
-        return x
-    '''
 def run(data):
     tmp = expression_parser(data)
 
