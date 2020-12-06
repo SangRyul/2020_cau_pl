@@ -40,7 +40,7 @@ lisp_to_python_dic = {
     'print': lambda x: print(x[0]),
     'null': lambda x: print("T") if x == "NIL" else print("F"),
     'numberp': lambda x: number_procedure(x),
-    'zerop': lambda x: print("T") if x[0] == 0 else print("F"), 
+    'zerop': lambda x: print("T") if x[0] == 0 else print("F"),
     'stringp' : lambda x : print("T") if(str(x[0]).startswith("\"")) else print("NIL"),
     'minusp': lambda x: minusp_procedure(x),
     'equal': lambda x: print("T") if x[0] == x[1] else print("F"),
@@ -224,10 +224,18 @@ def eval(x, dic):
     #     dic[var] = eval(exp, dic)
     elif x[0] == 'atom':
         (_, var) = x
-        if var[0] == "quote":
-            return "True"
+        if (str(type(var))) == "<class 'int'>":
+            print("True")
+        elif (str(type(var))) == "<class 'float'>":
+            print("True")
+        elif (str(type(var))) == "<class 'str'>" and len(var) > 1 \
+                and var[0] == '"':
+            print("True")
         else:
-            return "False"
+            if var[0] == "quote" and (len(x[1][1]) == 1):
+                return "True"
+            else:
+                return "NIL"
     elif x[0] == 'cond':
         if (len(x) == 4):
             (_, test1, test2, test3) = x
