@@ -170,13 +170,9 @@ def lambda_procedure(parms, body, *args):
     dic_new2.update(lisp_to_python_dic)
     dic_new2.update(dic_new)
     return eval(body, dic_new2)
-<<<<<<< HEAD
-# lisp의 output에 올바르게 print한다.
-=======
 
 # 최종 출력을 위한 함수
 # LISP 언어 형식대로 출력이 될 수 있도록 중괄호, 1차원배열로 만드는 과정(np, flatten) 등을 처리해줌
->>>>>>> origin/merge/final
 def output_print(x):
     if (isinstance(x, list)):
         # 1차원으로 처리
@@ -187,13 +183,8 @@ def output_print(x):
         print(new_output)
     else:
         print(x)
-<<<<<<< HEAD
 # 특정한 토큰에 변수와 그에 따른 함수, 함수에 들어가는 인자를 구분하기 위한 eval 함수
 # 재귀적으로 동작해서 최종적으로 결과를 반환한다.
-=======
-
-# evaluation 과정
->>>>>>> origin/merge/final
 def eval(x, dic):
 
     global flaga
@@ -290,10 +281,6 @@ def eval(x, dic):
 
         proc = eval(x[0], dic)
         args = [eval(exp, dic) for exp in x[1:]]
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/merge/final
 
         try:
             try:
@@ -375,11 +362,8 @@ def input_check_valid(data, user_input):
         # run(data)
 # main 함수
 def main():
-<<<<<<< HEAD
     # 프로그램의 시작점 모드를 파악할수 있다.
-=======
     #interface 내용
->>>>>>> origin/merge/final
     print("---- lisp interpreter -----")
     print("Please input a number")
     user_input = int(input("1: file mode / 2: repl mode / other number: quit program => "))
