@@ -103,14 +103,17 @@ def minusp_procedure(x):
     # float 이면 value error 가 나기 때문에 예외 처리
     except ValueError:
         try:
+            # float 형에 대한 처리
             if str(type(float(str(x)[str(x).find("[") + 1: str(x).find("]")]))) == "<class 'float'>":
                 if (float(str(x)[str(x).find("[") + 1: str(x).find("]")]) < 0):
                     print("T")
                 else:
                     print("F")
+            # int, float 도 아니면 에러 처리
         except ValueError:
             return print("Error")
-
+# subst 에 대한 함수
+# 리스트의 길이동안 반복문을 사용하여 차례 로 리스트의 원소들에 접근해보면서 대치 될 data와 같을 때 x[0]로 값을 대치
 def subst_procedure(x):
     if(x[1] in x[2]):
         for k in range(0,len(x[2])):
@@ -121,9 +124,11 @@ def subst_procedure(x):
     else:
         print("NIL")
 
+# remove 실행을 위한 함수
+# for문을 통해 Value가 여러 개 있어도 모두 삭제
 def remove_procedure(x):
     tmp = x[1][:]
-    value = x[0] # 이게 제거 대상 요소
+    value = x[0] # 제거 대상 요소
     if(value in tmp):
         for item in tmp:
             if item == value:
@@ -132,24 +137,32 @@ def remove_procedure(x):
     else:
         print("NIL")
 
+# Assoc 실행 함수
+# for문을 통해 이차원리스트의 원소(1 차원리스트)들을 반복시키고 k[0]의 인덱 스값에 해당하는 리스트를 반환함
 def assoc_procedure(x):
     for k in x[1]:
         if(k[0] == x[0]):
             return k
+    # 인덱스가 리스트의 인덱스값을 벗어나면 NIL 을 반환
     return "NIL"
 
+# number 함수
 def number_procedure(x):
     try:
+        # x를 string형 변환후 [ 와 ] 를 제거
+        # 다시 int형으로 형변환 후 해당 값의 type이 int형이라면 참을 반환
         if str(type(int(str(x)[str(x).find("[") + 1: str(x).find("]")]))) == "<class 'int'>":
             return print("T")
+        # float 형에 대해서도 위와 같이 처리해줌
     except ValueError:
         try:
             if str(type(float(str(x)[str(x).find("[") + 1: str(x).find("]")]))) == "<class 'float'>":
                 return print("T")
+        # float, int 모두 아니면 F 반환
         except ValueError:
             return print("F")
 
-
+# lambda 처리를 위한 함수
 def lambda_procedure(parms, body, *args):
     dic_new = {}
     for k, v in list(zip(parms, list(*args))):
@@ -157,39 +170,50 @@ def lambda_procedure(parms, body, *args):
     dic_new2.update(lisp_to_python_dic)
     dic_new2.update(dic_new)
     return eval(body, dic_new2)
+<<<<<<< HEAD
 # lisp의 output에 올바르게 print한다.
+=======
+
+# 최종 출력을 위한 함수
+# LISP 언어 형식대로 출력이 될 수 있도록 중괄호, 1차원배열로 만드는 과정(np, flatten) 등을 처리해줌
+>>>>>>> origin/merge/final
 def output_print(x):
     if (isinstance(x, list)):
+        # 1차원으로 처리
         x = np.array(x)
         x = x.flatten()
-
+        # 중괄호 처리
         new_output = '(' + ' '.join(map(str,x)) + ')'
         print(new_output)
     else:
         print(x)
+<<<<<<< HEAD
 # 특정한 토큰에 변수와 그에 따른 함수, 함수에 들어가는 인자를 구분하기 위한 eval 함수
 # 재귀적으로 동작해서 최종적으로 결과를 반환한다.
+=======
+
+# evaluation 과정
+>>>>>>> origin/merge/final
 def eval(x, dic):
 
     global flaga
     flaga = 0
+    # string 형에 대한 처리
     if isinstance(x, str):
         if(x.startswith("\"")):
             return x
         try:
-            '''
-            if(isinstance(dic[x], int)):
-                print(dic[x])
-            '''
-            #print(dic[x])
             return dic[x]
         except:
             return x
+
+    # int 형일 경우 그대로 반환
     elif isinstance(x, int):
         return x
+    # list 형일 경우 그대로 반환
     elif not isinstance(x, list):
         return x
-
+    # quote 에 대한 처리
     elif x[0] == 'quote':
         flaga = 1
         # quote 다음에 하나라면 변수로 취급해야한다.
@@ -197,6 +221,7 @@ def eval(x, dic):
         # qoute 다음에 괄호안에 둘러싸인 리스트 형태로 오면 괄호 취급
         (_, exp) = x
         return exp
+    # if 에 대한 처리
     elif x[0] == 'if':
         if (len(x) == 3):
             (_, test, conseq) = x
@@ -205,10 +230,11 @@ def eval(x, dic):
             (_, test, conseq, alt) = x
             exp = eval(conseq, dic) if eval(test, dic) else eval(alt, dic)
         return eval(exp, dic)
-
+    # define 에 대한 처리
     elif x[0] == 'define':
         (_, var, exp) = x
         dic[var] = eval(exp, dic)
+    # setq 에 대한 처리
     elif x[0] == 'setq':
         (_, var, exp) = x
 
@@ -218,16 +244,19 @@ def eval(x, dic):
             print(exp)
 
         dic[var] = eval(exp, dic)
-
+    # set 에 대한 처리
     elif x[0] == 'set':
         (_, var, exp) = x
         dic[var[1]] = eval(exp, dic)
-
+    # lamda 에 대한 처리
     elif x[0] == 'lambda':
         (_, parms, body, *args) = x
         return lambda_procedure(parms, body, args)
+    # atom 에 대한 처리
     elif x[0] == 'atom':
         (_, var) = x
+        # 각각의 데이터 자료형에 따른 반환 값
+        # atom 인지 아닌지에 대하여 처리해줌
         if (str(type(var))) == "<class 'int'>":
             print("True")
         elif (str(type(var))) == "<class 'float'>":
@@ -240,6 +269,7 @@ def eval(x, dic):
                 return "True"
             else:
                 return "NIL"
+    # cond 에 대한 처리
     elif x[0] == 'cond':
         if (len(x) == 4):
             (_, test1, test2, test3) = x
@@ -260,7 +290,10 @@ def eval(x, dic):
 
         proc = eval(x[0], dic)
         args = [eval(exp, dic) for exp in x[1:]]
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/merge/final
 
         try:
             try:
@@ -340,20 +373,26 @@ def input_check_valid(data, user_input):
 
         # (의 숫자와 )자의 숫자가 동일해 졌을때 run에 data를 날려야 한다.
         # run(data)
+# main 함수
 def main():
+<<<<<<< HEAD
     # 프로그램의 시작점 모드를 파악할수 있다.
+=======
+    #interface 내용
+>>>>>>> origin/merge/final
     print("---- lisp interpreter -----")
     print("Please input a number")
     user_input = int(input("1: file mode / 2: repl mode / other number: quit program => "))
     while(True):
         data = None
+        # 1번 모드 작동 (file mode)
         if(user_input == 1):
             file_name = "input.lsp"
             with open(file_name, 'r', encoding='UTF8') as f:
                 data = f.read().splitlines()
                 input_check_valid(data, user_input)
             break;
-
+        # 2번 모드 작동 ( repl mode )
         elif(user_input == 2):
             data = input(">>> ")
             input_check_valid(data, user_input)
