@@ -157,7 +157,7 @@ def lambda_procedure(parms, body, *args):
     dic_new2.update(lisp_to_python_dic)
     dic_new2.update(dic_new)
     return eval(body, dic_new2)
-
+# lisp의 output에 올바르게 print한다.
 def output_print(x):
     if (isinstance(x, list)):
         x = np.array(x)
@@ -167,7 +167,8 @@ def output_print(x):
         print(new_output)
     else:
         print(x)
-
+# 특정한 토큰에 변수와 그에 따른 함수, 함수에 들어가는 인자를 구분하기 위한 eval 함수
+# 재귀적으로 동작해서 최종적으로 결과를 반환한다.
 def eval(x, dic):
 
     global flaga
@@ -259,13 +260,8 @@ def eval(x, dic):
 
         proc = eval(x[0], dic)
         args = [eval(exp, dic) for exp in x[1:]]
-<<<<<<< HEAD
-        print(args)
-        # return proc(args)
-=======
 
 
->>>>>>> origin/merge/semifinal
         try:
             try:
                 return proc(args)
@@ -302,6 +298,8 @@ def input_check_valid(data, user_input):
     multi_line_data_buffer = ""
     count_left_bracket = 0
     count_right_bracket = 0
+    # 사용자가 multiline을 입력하는것을 지원하기 위해 만든 함수
+    # 괄호의 여닫는 개수 비교를 통하여 문장의 끝을 알 수 있다.
 
     if(user_input == 1):
         pass
@@ -343,7 +341,7 @@ def input_check_valid(data, user_input):
         # (의 숫자와 )자의 숫자가 동일해 졌을때 run에 data를 날려야 한다.
         # run(data)
 def main():
-
+    # 프로그램의 시작점 모드를 파악할수 있다.
     print("---- lisp interpreter -----")
     print("Please input a number")
     user_input = int(input("1: file mode / 2: repl mode / other number: quit program => "))

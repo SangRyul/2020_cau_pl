@@ -121,19 +121,21 @@ def atom(s):
         except ValueError:
             return str(s)
 
-# 상렬씨가 써주기
+# parser의 시작점
 def expression_parser(data):
     try:
+        #각 토큰을 value_parser에서 토크나이즈해서 token과 나머지 부분으로 나눈다.
         res = value_parser(data)
         rest = res.pop(1)
         token = res.pop(0)
-
+        # 받은 token의 대소문자 구별을 없애기 위해서 소문자로 모두 바꾼다.
         if(token in keywords_li):
             token = token.lower()
         if token == '':
             rest = rest[rest.index('\n') + 1:]
 
             return [token, rest]
+        #토큰이 (로 시작하면
         elif token == '(':
             L = []
 
@@ -144,7 +146,7 @@ def expression_parser(data):
 
                 if token[0] == ' ' or token == '\n':
                     continue
-
+                #토큰이 '로 시작하면 quote로 바꾸어줘야 한다.
                 elif (token == '\''):
                     tmp_quote = expression_parser(rest)[0]
                     rest = list(rest)
@@ -173,6 +175,7 @@ def expression_parser(data):
                     L.append(atom(token))
 
             rest = rest[1:]
+            #남은 문자열에 대해서도 위와 같은 과정 반복
             return [L, rest]
 
         else:
